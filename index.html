@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صدقة جارية | أكرم عادل درويش</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;500;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --dark-blue: #0f172a;
+            --card-bg: rgba(17, 25, 40, 0.75);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --radius: 24px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.9)), 
+                        url('https://images.unsplash.com/photo-1590076215667-873d96c89bb1?q=80&w=1920&auto=format&fit=crop') center/cover fixed no-repeat;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* حاوية الصفحة */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* الهيدر */
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .basmala { font-family: 'Amiri', serif; font-size: 26px; color: var(--gold); display: block; margin-bottom: 15px; }
+        h1 { font-size: clamp(28px, 5vw, 48px); margin: 10px 0; font-weight: 900; letter-spacing: -1px; }
+        .name-highlight { color: var(--gold); text-shadow: 0 0 20px var(--gold-glow); }
+        .subtitle { font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 10px auto 0; }
+
+        /* التخطيط الشبكي */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        @media (min-width: 992px) { .main-grid { grid-template-columns: 1.2fr 0.8fr; } }
+
+        /* البطاقات */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 25px;
+            padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .icon-box {
+            width: 40px; height: 40px; background: rgba(212, 175, 55, 0.15); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 20px;
+        }
+        .card-title { font-size: 20px; font-weight: 700; color: #fff; }
+
+        /* قسم القرآن */
+        select.surah-select {
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--gold);
+            color: #fff; border-radius: 15px; font-family: 'Cairo'; cursor: pointer; font-size: 16px; margin-bottom: 20px;
+            appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: left 15px center; background-size: 20px;
+        }
+
+        .quran-display {
+            height: 500px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 30px;
+            font-family: 'Amiri', serif; font-size: 28px; line-height: 2.3; text-align: center; color: #fff;
+            scrollbar-width: thin; scrollbar-color: var(--gold) transparent;
+        }
+        .quran-display::-webkit-scrollbar { width: 6px; }
+        .quran-display::-webkit-scrollbar-thumb { background-color: var(--gold); border-radius: 10px; }
+        
+        audio { width: 100%; margin-top: 20px; border-radius: 10px; filter: invert(0.9) hue-rotate(180deg); }
+
+        /* نظام التبويبات للأدعية */
+        .tabs-wrapper { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted); padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            font-family: 'Cairo'; font-weight: 600; white-space: nowrap; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 0 15px var(--gold-glow); }
+
+        .dua-container { height: 400px; overflow-y: auto; padding-right: 5px; }
+        .dua-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border-right: 3px solid var(--gold); padding: 20px; margin-bottom: 15px;
+            border-radius: 12px; font-size: 16px; line-height: 1.8; position: relative;
+        }
+        .dua-card::before { content: '🤲'; position: absolute; left: 10px; top: 10px; opacity: 0.2; font-size: 24px; }
+        .highlight-name { color: var(--gold); font-weight: bold; }
+
+        /* المسبحة */
+        .tasbeeh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 15px; margin-top: 20px; }
+        .tasbeeh-item {
+            background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px;
+            text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tasbeeh-item:active { transform: scale(0.95); background: rgba(255,255,255,0.08); }
+        
+        .ring-wrapper { position: relative; width: 70px; height: 70px; margin: 0 auto 10px; }
+        .ring-wrapper svg { width: 70px; height: 70px; transform: rotate(-90deg); }
+        .circle-bg { stroke: rgba(255,255,255,0.1); stroke-width: 5; fill: none; }
+        .circle-progress { stroke: var(--gold); stroke-width: 5; fill: none; stroke-dasharray: 188; stroke-dashoffset: 188; transition: stroke-dashoffset 0.2s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
+        .counter { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 18px; }
+        
+        .tasbeeh-item.done .circle-progress { stroke: var(--success); }
+        .tasbeeh-item.done .counter { color: var(--success); }
+
+        /* لودر التحميل */
+        .loader { text-align: center; color: var(--gold); display: none; margin: 20px; font-weight: bold; }
+        
+        footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 14px; opacity: 0.7; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <span class="basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</span>
+        <p style="margin:0; letter-spacing: 1px; color: var(--text-muted);">صدقة جارية ونورٌ دائم عن روح الفقيد</p>
+        <h1><span class="name-highlight">أكرم عادل درويش</span></h1>
+        <p class="subtitle">"اللهم اجعل القرآن ربيع قلبه، ونور صدره، وجلاء حزنه، وذهاب همه"</p>
+    </header>
+
+    <div class="main-grid">
+
+        <section class="card">
+            <div class="card-header">
+                <div class="icon-box">📖</div>
+                <div class="card-title">ختمة القرآن الكريم</div>
+            </div>
+
+            <select id="surahSelect" class="surah-select" onchange="loadSurah(this.value)">
+                <option value="" disabled selected>اختر السورة لبدء التلاوة...</option>
+            </select>
+
+            <div id="loader" class="loader">جاري استدعاء الآيات والتلاوة...</div>
+
+            <div class="quran-display" id="quranDisplay">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.5;">
+                    <span style="font-size: 40px; margin-bottom: 20px;">📿</span>
+                    <p>اختر سورة من القائمة أعلاه.<br>سيتم عرض النص وتشغيل الصوت تلقائياً.</p>
+                </div>
+            </div>
+
+            <audio id="audioPlayer" controls></audio>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 25px;">
+            
+            <section class="card">
+                <div class="card-header">
+                    <div class="icon-box">🤲</div>
+                    <div class="card-title">صحائف الدعاء</div>
+                </div>
+
+                <div class="tabs-wrapper">
+                    <button class="tab-btn active" onclick="switchTab('mercy')">رحمة ومغفرة</button>
+                    <button class="tab-btn" onclick="switchTab('grave')">أنيس القبر</button>
+                    <button class="tab-btn" onclick="switchTab('judgement')">يوم العرض</button>
+                    <button class="tab-btn" onclick="switchTab('family')">صبر الأهل</button>
+                </div>
+
+                <div class="dua-container" id="duaContainer">
+                    </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <div class="icon-box">✨</div>
+                    <div class="card-title">باقيات صالحات</div>
+                </div>
+
+                <div class="tasbeeh-grid">
+                    <div class="tasbeeh-item" onclick="count(this, 33)">
+                        <div class="ring-wrapper">
+                            <svg><circle class="circle-bg" cx="35" cy="35" r="30"/><circle class="circle-progress" cx="35" cy="35" r="30"/></svg>
+                            <span class="counter">33</span>
+                        </div>
+                        <small>سبحان الله</small>
+                    </div>
+
+                    <div class="tasbeeh-item" onclick="count(this, 33)">
+                        <div class="ring-wrapper">
+                            <svg><circle class="circle-bg" cx="35" cy="35" r="30"/><circle class="circle-progress" cx="35" cy="35" r="30"/></svg>
+                            <span class="counter">33</span>
+                        </div>
+                        <small>الحمد لله</small>
+                    </div>
+
+                    <div class="tasbeeh-item" onclick="count(this, 33)">
+                        <div class="ring-wrapper">
+                            <svg><circle class="circle-bg" cx="35" cy="35" r="30"/><circle class="circle-progress" cx="35" cy="35" r="30"/></svg>
+                            <span class="counter">33</span>
+                        </div>
+                        <small>الله أكبر</small>
+                    </div>
+
+                    <div class="tasbeeh-item" onclick="count(this, 100)">
+                        <div class="ring-wrapper">
+                            <svg><circle class="circle-bg" cx="35" cy="35" r="30"/><circle class="circle-progress" cx="35" cy="35" r="30"/></svg>
+                            <span class="counter">100</span>
+                        </div>
+                        <small>أستغفر الله</small>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>صدقة جارية | نسألكم الفاتحة والدعاء لـ أكرم عادل درويش</p>
+    </footer>
+
+</div>
+
+<script>
+    // === 1. قاعدة بيانات الأدعية ===
+    const duaDB = {
+        mercy: [
+            "اللهم اغفر لـ <span class='highlight-name'>أكرم عادل درويش</span> وارحمه، وعافه واعف عنه، وأكرم نزله، ووسع مدخله، واغسله بالماء والثلج والبرد.",
+            "اللهم نقه من الخطايا كما ينقى الثوب الأبيض من الدنس، وأبدله داراً خيراً من داره، وأهلاً خيراً من أهله.",
+            "اللهم إن كان <span class='highlight-name'>أكرم</span> محسناً فزد في حسناته، وإن كان مسيئاً فتجاوز عن سيئاته.",
+            "اللهم إنه عبدك وابن عبدك، خرج من روح الدنيا وسعتها، ومحبوبيه وأحبائه فيها، إلى ظلمة القبر وما هو لاقيه، اللهم فكن له حبيباً وأنيساً.",
+            "اللهم عامله بما أنت أهله، ولا تعامله بما هو أهله، واجزه عن الإحسان إحساناً، وعن الإساءة عفواً وغفراناً.",
+            "اللهم إن رحمتك وسعت كل شيء، فارحمه رحمة تطمئن بها نفسه، وتقر بها عينه.",
+            "اللهم احشره مع المتقين إلى الرحمن وفداً، واجعل تحيته سلاماً لك من أصحاب اليمين."
+        ],
+        grave: [
+            "اللهم اجعل قبر <span class='highlight-name'>أكرم عادل درويش</span> روضة من رياض الجنة، ولا تجعله حفرة من حفر النار.",
+            "اللهم أفسح له في قبره مد بصره، وافرش قبره من فراش الجنة.",
+            "اللهم أعذه من عذاب القبر، وجفاف الأرض عن جنبيها.",
+            "اللهم املأ قبره بالرضا، والنور، والفسحة، والسرور.",
+            "اللهم إنه نزل بك وأنت خير منزول به، وأصبح فقيراً إلى رحمتك، وأنت غني عن عذابه.",
+            "اللهم أنزل على قبره الضياء والنور، والفسحة والسرور، وانقله من ضيق اللحود ومراتع الدود إلى جناتك جنات الخلود.",
+            "اللهم قه فتنة القبر وعذاب النار، وأنت أهل الوفاء والحق."
+        ],
+        judgement: [
+            "اللهم يمن كتابه، ويسر حسابه، وثقل بالحسنات ميزانه، وثبت على الصراط أقدامه.",
+            "اللهم اجعل عن يمينه نوراً، وعن شماله نوراً، ومن أمامه نوراً، ومن فوقه نوراً.",
+            "اللهم آمنه من فزع يوم القيامة، ومن هول يوم القيامة، واجعل نفسه آمنة مطمئنة.",
+            "اللهم اسقه من حوض نبيك محمد ﷺ شربة هنيئة مريئة لا يظمأ بعدها أبداً.",
+            "اللهم لا تخزه يوم يبعثون، يوم لا ينفع مال ولا بنون إلا من أتى الله بقلب سليم.",
+            "اللهم ظله تحت ظل عرشك يوم لا ظل إلا ظلك ولا باقي إلا وجهك.",
+            "اللهم بيض وجهه يوم تبيض وجوه وتسود وجوه."
+        ],
+        family: [
+            "اللهم اربط على قلوب أهله وذويه بالصبر والسلوان والرضا بقضائك.",
+            "اللهم اجعل مصابهم فيه رفعة لدرجاته ودرجاتهم، وكفارة لسيئاتهم.",
+            "اللهم لا تحرمنا أجره، ولا تفتنا بعده، واغفر لنا وله.",
+            "اللهم اجمعنا به في جنتك، جنة الفردوس الأعلى، مع النبيين والصديقين والشهداء والصالحين.",
+            "اللهم اجعل ذريته ذرية صالحة تدعو له بخير إلى يوم الدين."
+        ]
+    };
+
+    // === 2. وظائف الأدعية ===
+    function switchTab(category) {
+        // تحديث الأزرار
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // تعبئة الأدعية
+        const container = document.getElementById('duaContainer');
+        container.innerHTML = "";
+        container.scrollTop = 0;
+        
+        // تأثير الظهور
+        container.style.opacity = 0;
+        setTimeout(() => {
+            duaDB[category].forEach(duaText => {
+                const card = document.createElement('div');
+                card.className = 'dua-card';
+                card.innerHTML = duaText;
+                container.appendChild(card);
+            });
+            container.style.opacity = 1;
+        }, 200);
+        container.style.transition = 'opacity 0.3s';
+    }
+
+    // === 3. وظائف القرآن الكريم (API) ===
+    const select = document.getElementById('surahSelect');
+    const display = document.getElementById('quranDisplay');
+    const player = document.getElementById('audioPlayer');
+    const loader = document.getElementById('loader');
+
+    async function initQuran() {
+        try {
+            const res = await fetch('https://api.alquran.cloud/v1/surah');
+            const data = await res.json();
+            data.data.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.number;
+                opt.textContent = `${s.number}. ${s.name}`;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error("Error fetching surah list", e);
+        }
+    }
+
+    async function loadSurah(number) {
+        if (!number) return;
+        
+        loader.style.display = 'block';
+        display.style.opacity = '0.3';
+        
+        try {
+            // جلب النص
+            const resText = await fetch(`https://api.alquran.cloud/v1/surah/${number}`);
+            const dataText = await resText.json();
+            
+            // تهيئة الصوت (مشاري العفاسي)
+            const paddedNum = String(number).padStart(3, '0');
+            const audioUrl = `https://server8.mp3quran.net/afs/${paddedNum}.mp3`;
+
+            // العرض
+            const ayahs = dataText.data.ayahs.map(a => 
+                `<span class="ayah">${a.text}</span> <span class="ayah-num">۝${a.numberInSurah}</span>`
+            ).join(' ');
+
+            display.innerHTML = `
+                <h2 style="color:var(--gold); margin-bottom:20px;">${dataText.data.name}</h2>
+                <div style="text-align:justify; text-align-last:center;">${ayahs}</div>
+            `;
+            
+            player.src = audioUrl;
+            player.style.display = 'block';
+            
+        } catch (e) {
+            display.innerHTML = '<p style="color:red">حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.</p>';
+        } finally {
+            loader.style.display = 'none';
+            display.style.opacity = '1';
+        }
+    }
+
+    // === 4. وظائف المسبحة ===
+    function count(el, target) {
+        if (el.classList.contains('done')) return;
+
+        const counter = el.querySelector('.counter');
+        const ring = el.querySelector('.circle-progress');
+        let current = parseInt(counter.innerText);
+        
+        // محيط الدائرة r=30 -> 2*PI*30 ≈ 188.4
+        const circumference = 188; 
+
+        if (current > 1) {
+            current--;
+            counter.innerText = current;
+            
+            // حساب التقدم العكسي
+            const offset = circumference - ((target - current) / target) * circumference;
+            ring.style.strokeDashoffset = offset;
+            
+            // اهتزاز خفيف
+            if (navigator.vibrate) navigator.vibrate(25);
+        } else {
+            // انتهاء العد
+            counter.innerText = "✓";
+            ring.style.strokeDashoffset = 0;
+            el.classList.add('done');
+            
+            // اهتزاز تأكيدي
+            if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        }
+    }
+
+    // التشغيل المبدئي
+    window.addEventListener('DOMContentLoaded', () => {
+        initQuran();
+        switchTab('mercy'); // تفعيل التبويب الأول تلقائياً
+    });
+
+</script>
+
+</body>
+</html>
